@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,27 +41,30 @@ import qrgenerator.qrkitpainter.rememberQrKitPainter
 @Composable
 @Preview
 fun LoginScreen(
-    navController: NavController
+    navController: NavController,
+    transactionViewModel: TransactionViewModel
 ) {
+    val qrUrl by transactionViewModel.qrUrl.collectAsState()
+    val isSuccess by transactionViewModel.isSuccess.collectAsState()
+    val isLoading by transactionViewModel.isLoading.collectAsState()
 
     var responseText by remember { mutableStateOf("") }
-    var isLoadingQR by remember { mutableStateOf(false) }
 
     val painter = rememberQrKitPainter(data = responseText)
     var isDialogOpen by remember { mutableStateOf(false) }
 
+
     Scaffold(
         bottomBar = {
-            Row(Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.Center) { PrimaryButton(
-                enabled = !isLoadingQR,
-                buttonText = "Usar código QR",
-            ) {
-                isLoadingQR = true
-                isDialogOpen = true
-                CoroutineScope(Dispatchers.IO).launch {
-                    val response = ApiClient.ping(
+            Row(Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.Center) {
+                PrimaryButton(
+                    enabled = !isLoading,
+                    buttonText = "Usar código QR",
+                ) {
+                    isDialogOpen = true
+                    transactionViewModel.start(
                         Config(
-                            urlPrefix = "https://wallet.a-sit.at/remote/",
+                            urlPrefix = "haip://",
                             credentials = listOf(
                                 Credential(
                                     credentialType = "urn:eu.europa.ec.eudi:pid:1",
@@ -74,26 +78,24 @@ fun LoginScreen(
                             )
                         )
                     )
-                    if (response == null) {
-                        isLoadingQR = false
-                        responseText = ""
-                        return@launch
-                    }
-                    if (response.qrCodeUrl.isNotBlank()) {
-                        isLoadingQR = false
-                        responseText = response.qrCodeUrl
-                    }
                 }
-            } }
+            }
         }
     ) {
-
+        if (isSuccess) {
+            // Navigate to Home Screen
+            CoroutineScope(Dispatchers.IO).launch {
+                navController.navigate("home") {
+                    popUpTo("login") { inclusive = true }
+                }
+            }
+        }
     }
 
     if (isDialogOpen) {
         CustomDialog(isDialogOpen = isDialogOpen, onDismissRequest = {
-            responseText = ""
             isDialogOpen = false
+            transactionViewModel.cancel()
         }) {
             Column(
                 modifier = Modifier
@@ -103,10 +105,10 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                when (responseText.isNotBlank()) {
+                when (!qrUrl.isNullOrBlank()) {
                     true -> Crossfade(targetState = responseText) { qrCodeUrl ->
                         QRCodeImage(
-                            url = qrCodeUrl,
+                            url = qrUrl ?: "",
                             modifier = Modifier.size(250.dp),
                             contentDescription = "QR Code",
                             onSuccess = {

@@ -3,8 +3,12 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -15,9 +19,9 @@ object ApiClient {
         }
     }
 
-    suspend fun ping(body: Config): Response? {
+    suspend fun createTransaction(body: Config): Response? {
         try {
-            return client.post("http://localhost:8080/verifier/transaction/create") {
+            return client.post("https://interzonal-flurriedly-madisyn.ngrok-free.dev/verifier/transaction/create") {
                 contentType(ContentType.Application.Json)
                 setBody(body)
             }.body()
@@ -26,6 +30,26 @@ object ApiClient {
             return null
         }
 
+    }
+
+    /**
+     * Polls /api/single/{id} every pollIntervalMillis until the server responds 200 OK.
+     * Emits true when success; completes after that.
+     */
+    fun pollForResult(id: String, pollIntervalMillis: Long = 2000L): Flow<Boolean> = flow {
+        while (true) {
+            try {
+                val response: HttpResponse = client.get("https://interzonal-flurriedly-madisyn.ngrok-free.dev/api/single/$id")
+                if (response.status == HttpStatusCode.OK) {
+                    emit(true)
+                    break
+                }
+            } catch (t: Throwable) {
+                // server not ready or network error -> ignore and continue polling
+                print("Error on ping: ${t.message}")
+            }
+            delay(pollIntervalMillis)
+        }
     }
 }
 

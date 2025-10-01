@@ -8,6 +8,7 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberDialogState
 import androidx.compose.ui.window.rememberWindowState
 import kotlinx.serialization.Serializable
+import org.example.project.login.TransactionViewModel
 
 fun main() = application {
     // Start the server when the app launches
@@ -15,12 +16,13 @@ fun main() = application {
     val windowState = rememberWindowState(
         position = WindowPosition(Alignment.Center)
     )
+    val vm = TransactionViewModel()
     Window(
         state = windowState,
         onCloseRequest = ::exitApplication,
         title = "DesktopKotlinProject",
     ) {
-        App()
+        App(vm)
     }
 }
 
