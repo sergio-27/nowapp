@@ -1,11 +1,15 @@
 package org.example.project.client
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.*
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
-import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -39,7 +43,8 @@ object ApiClient {
     fun pollForResult(id: String, pollIntervalMillis: Long = 2000L): Flow<Boolean> = flow {
         while (true) {
             try {
-                val response: HttpResponse = client.get("https://interzonal-flurriedly-madisyn.ngrok-free.dev/api/single/$id")
+                val response: HttpResponse = client.get("https://interzonal-flurriedly-madisyn.ngrok-free.dev/verifier/api/single/$id")
+                println("response: $response")
                 if (response.status == HttpStatusCode.OK) {
                     emit(true)
                     break

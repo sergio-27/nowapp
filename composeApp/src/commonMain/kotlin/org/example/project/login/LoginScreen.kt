@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,6 +24,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +36,7 @@ import org.example.project.client.Config
 import org.example.project.client.Credential
 import org.example.project.components.buttons.PrimaryButton
 import org.example.project.components.dialogs.CustomDialog
+import org.example.project.routes.HomeScreenRoute
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import qrgenerator.QRCodeImage
 import qrgenerator.qrkitpainter.rememberQrKitPainter
@@ -41,9 +45,10 @@ import qrgenerator.qrkitpainter.rememberQrKitPainter
 @Composable
 @Preview
 fun LoginScreen(
-    navController: NavController,
-    transactionViewModel: TransactionViewModel
+    transactionViewModel: TransactionViewModel = viewModel { TransactionViewModel() },
+    onLoginSuccess: () -> Unit,
 ) {
+
     val qrUrl by transactionViewModel.qrUrl.collectAsState()
     val isSuccess by transactionViewModel.isSuccess.collectAsState()
     val isLoading by transactionViewModel.isLoading.collectAsState()
@@ -53,6 +58,13 @@ fun LoginScreen(
     val painter = rememberQrKitPainter(data = responseText)
     var isDialogOpen by remember { mutableStateOf(false) }
 
+
+    LaunchedEffect(isSuccess) {
+        if (isSuccess) {
+            onLoginSuccess()
+            isDialogOpen = false
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -64,7 +76,7 @@ fun LoginScreen(
                     isDialogOpen = true
                     transactionViewModel.start(
                         Config(
-                            urlPrefix = "haip://",
+                            urlPrefix = "https://interzonal-flurriedly-madisyn.ngrok-free.dev",
                             credentials = listOf(
                                 Credential(
                                     credentialType = "urn:eu.europa.ec.eudi:pid:1",
@@ -82,20 +94,13 @@ fun LoginScreen(
             }
         }
     ) {
-        if (isSuccess) {
-            // Navigate to Home Screen
-            CoroutineScope(Dispatchers.IO).launch {
-                navController.navigate("home") {
-                    popUpTo("login") { inclusive = true }
-                }
-            }
-        }
+
     }
 
     if (isDialogOpen) {
         CustomDialog(isDialogOpen = isDialogOpen, onDismissRequest = {
-            isDialogOpen = false
             transactionViewModel.cancel()
+            isDialogOpen = false
         }) {
             Column(
                 modifier = Modifier

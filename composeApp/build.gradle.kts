@@ -46,6 +46,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
+            implementation("androidx.lifecycle:lifecycle-viewmodel:2.8.0-alpha03")
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.navigation.compose)

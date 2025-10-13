@@ -8,7 +8,6 @@ import androidx.navigation.compose.rememberNavController
 import at.asitplus.wallet.lib.Initializer
 import org.example.project.home.HomeScreen
 import org.example.project.login.LoginScreen
-import org.example.project.login.TransactionViewModel
 import org.example.project.routes.HomeScreenRoute
 import org.example.project.routes.LoginScreenRoute
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -16,14 +15,18 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
-fun App(transactionViewModel: TransactionViewModel) {
+fun App() {
 
     Initializer.initOpenIdModule()
     val navController = rememberNavController()
 
     MaterialTheme {
         NavHost(navController = navController, startDestination = LoginScreenRoute) {
-            composable<LoginScreenRoute> { LoginScreen(navController, transactionViewModel) }
+            composable<LoginScreenRoute> {
+                LoginScreen {
+                    navController.navigate(HomeScreenRoute)
+                }
+            }
             composable<HomeScreenRoute> { HomeScreen() }
             // You can add more destinations similarly
         }

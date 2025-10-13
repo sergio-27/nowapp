@@ -16,13 +16,12 @@ fun main() = application {
     val windowState = rememberWindowState(
         position = WindowPosition(Alignment.Center)
     )
-    val vm = TransactionViewModel()
     Window(
         state = windowState,
         onCloseRequest = ::exitApplication,
         title = "DesktopKotlinProject",
     ) {
-        App(vm)
+        App()
     }
 }
 
