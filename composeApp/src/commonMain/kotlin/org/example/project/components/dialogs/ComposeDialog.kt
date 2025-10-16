@@ -1,4 +1,4 @@
-package org.example.project.components.dialogs.compose
+package org.example.project.components.dialogs
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height

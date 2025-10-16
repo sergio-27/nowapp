@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 
 object ApiClient {
     private val client = HttpClient {
@@ -40,13 +42,13 @@ object ApiClient {
      * Polls /api/single/{id} every pollIntervalMillis until the server responds 200 OK.
      * Emits true when success; completes after that.
      */
-    fun pollForResult(id: String, pollIntervalMillis: Long = 2000L): Flow<Boolean> = flow {
+    fun pollForResult(id: String, pollIntervalMillis: Long = 2000L): Flow<AuthenticatedUser> = flow {
         while (true) {
             try {
                 val response: HttpResponse = client.get("https://interzonal-flurriedly-madisyn.ngrok-free.dev/verifier/api/single/$id")
-                println("response: $response")
                 if (response.status == HttpStatusCode.OK) {
-                    emit(true)
+
+                    emit(response.body<UserResponse>().authenticatedUser)
                     break
                 }
             } catch (t: Throwable) {

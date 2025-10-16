@@ -34,11 +34,9 @@ class TransactionViewModel(
                 ApiClient.createTransaction(body)?.let {
                     _qrBase64.value = it.qrCodePng
                     _qrUrl.value = it.qrCodeUrl
-                    ApiClient.pollForResult(it.id).collect { success ->
-                        if (success) {
+                    ApiClient.pollForResult(it.id).collect { authenticatedUser ->
                             _isSuccess.value = true
                             _isLoading.value = false
-                        }
                     }
                 }
             } catch (e: Throwable) {
