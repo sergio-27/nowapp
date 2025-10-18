@@ -9,8 +9,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.example.project.client.ApiClient
-import org.example.project.client.Config
+import org.example.project.client.AuthorizationApiClient
+import org.example.project.client.UserApiClient
+import org.example.project.models.Config
+import org.example.project.models.User
 
 class TransactionViewModel(
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Main + Job())
@@ -24,6 +26,9 @@ class TransactionViewModel(
     private val _isSuccess = MutableStateFlow(false)
     val isSuccess: StateFlow<Boolean> = _isSuccess.asStateFlow()
 
+    private val _authenticatedUser = MutableStateFlow<User?>(null)
+    val authenticatedUser: StateFlow<User?> = _authenticatedUser.asStateFlow()
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
@@ -31,12 +36,17 @@ class TransactionViewModel(
         _isLoading.value = true
         scope.launch {
             try {
-                ApiClient.createTransaction(body)?.let {
+                AuthorizationApiClient.createTransaction(body)?.let {
                     _qrBase64.value = it.qrCodePng
                     _qrUrl.value = it.qrCodeUrl
-                    ApiClient.pollForResult(it.id).collect { authenticatedUser ->
+                    AuthorizationApiClient.pollForResult(it.id).collect { authenticatedUser ->
+                        UserApiClient.getUserById("23459484D").let { response ->
+                            if (response != null) {
+                                _authenticatedUser.value = response
+                            }
                             _isSuccess.value = true
                             _isLoading.value = false
+                        }
                     }
                 }
             } catch (e: Throwable) {

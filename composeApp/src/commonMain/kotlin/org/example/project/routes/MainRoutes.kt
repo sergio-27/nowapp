@@ -4,6 +4,9 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
+object RegisterUserScreenRoute
+
+@Serializable
 object LoginScreenRoute
 
 @Serializable
