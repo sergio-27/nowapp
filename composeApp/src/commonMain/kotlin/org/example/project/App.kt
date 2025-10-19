@@ -8,9 +8,10 @@ import androidx.navigation.compose.rememberNavController
 import at.asitplus.wallet.lib.Initializer
 import org.example.project.home.HomeScreen
 import org.example.project.login.LoginScreen
+import org.example.project.login.activate.ActivateCredentialScreen
 import org.example.project.routes.HomeScreenRoute
 import org.example.project.routes.LoginScreenRoute
-import org.example.project.routes.RegisterUserScreenRoute
+import org.example.project.routes.ActivateCredentialScreenRoute
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
@@ -24,14 +25,22 @@ fun App() {
     MaterialTheme {
         NavHost(navController = navController, startDestination = LoginScreenRoute) {
             composable<LoginScreenRoute> {
-                LoginScreen {
-                    navController.navigate(HomeScreenRoute)
-                }
+                LoginScreen(
+                    onClickActivateCredentials = {
+                        navController.navigate(ActivateCredentialScreenRoute)
+                    },
+                    onLoginSuccess = {
+                        navController.navigate(HomeScreenRoute)
+                    })
             }
             composable<HomeScreenRoute> { HomeScreen() }
             // You can add more destinations similarly
 
-            composable<RegisterUserScreenRoute> {  }
+            composable<ActivateCredentialScreenRoute> {
+                ActivateCredentialScreen(
+                    onClickBack = { navController.navigateUp() }
+                )
+            }
         }
     }
 }

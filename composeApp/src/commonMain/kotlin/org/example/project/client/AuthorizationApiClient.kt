@@ -1,6 +1,7 @@
 package org.example.project.client
 
 import io.ktor.client.call.body
+import io.ktor.client.plugins.ResponseException
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -45,9 +46,9 @@ object AuthorizationApiClient {
                         emit(response.body<AuthenticatedUserResponse>().authenticatedUser)
                         break
                     }
-                } catch (t: Throwable) {
+                } catch (t: ResponseException) {
                     // server not ready or network error -> ignore and continue polling
-                    print("Error on ping: ${t.message}")
+                    print("Error on ping: ${t}")
                 }
                 delay(pollIntervalMillis)
             }

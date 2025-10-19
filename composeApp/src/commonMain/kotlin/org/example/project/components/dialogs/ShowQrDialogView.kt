@@ -14,14 +14,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import qrgenerator.QRCodeImage
 
 @Composable
+@Preview
 fun ShowQrDialogView(
-    isDialogOpen: Boolean,
-    onDismissRequest: () -> Unit,
-    qrUrl: String?,
-    responseText: String,
+    isDialogOpen: Boolean = false,
+    onDismissRequest: () -> Unit = {},
+    qrUrl: String? = null,
+    responseText: String = "",
 ) {
 
 

@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-object RegisterUserScreenRoute
+object ActivateCredentialScreenRoute
 
 @Serializable
 object LoginScreenRoute

@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.example.project.client.AuthorizationApiClient
 import org.example.project.client.UserApiClient
-import org.example.project.models.Config
 import org.example.project.models.User
+import org.example.project.utils.AppConstants
 
 class TransactionViewModel(
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Main + Job())
@@ -32,23 +32,26 @@ class TransactionViewModel(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    fun start(body: Config) {
+    fun start() {
         _isLoading.value = true
         scope.launch {
             try {
-                AuthorizationApiClient.createTransaction(body)?.let {
-                    _qrBase64.value = it.qrCodePng
-                    _qrUrl.value = it.qrCodeUrl
-                    AuthorizationApiClient.pollForResult(it.id).collect { authenticatedUser ->
-                        UserApiClient.getUserById("23459484D").let { response ->
-                            if (response != null) {
-                                _authenticatedUser.value = response
+                AuthorizationApiClient.createTransaction(
+                    AppConstants.requestedCredentialMetadataConfig
+                )
+                    ?.let {
+                        _qrBase64.value = it.qrCodePng
+                        _qrUrl.value = it.qrCodeUrl
+                        AuthorizationApiClient.pollForResult(it.id).collect { authenticatedUser ->
+                            UserApiClient.getUserById("234e59484D").let { response ->
+                                if (response != null) {
+                                    _authenticatedUser.value = response
+                                }
+                                _isSuccess.value = true
+                                _isLoading.value = false
                             }
-                            _isSuccess.value = true
-                            _isLoading.value = false
                         }
                     }
-                }
             } catch (e: Throwable) {
                 println("Error from start-transaction: ${e.message}")
                 // expose error state if needed
@@ -57,11 +60,16 @@ class TransactionViewModel(
         }
     }
 
-    fun cancel() {
-        scope.cancel()
+    fun reset() {
+        _authenticatedUser.value = null
         _qrUrl.value = null
         _qrBase64.value = null
         _isLoading.value = false
         _isSuccess.value = false
+    }
+
+    fun cancel() {
+        scope.cancel()
+        reset()
     }
 }
