@@ -47,10 +47,6 @@ fun App() {
         ) {
             composable<LoginScreenRoute> {
                 LoginScreen(
-                    onClickLogin = {
-                        //TODO authenticate user credentials here
-                        navigateAndClean(HomeScreenRoute)
-                    },
                     onClickRegisterUser = { authenticatedUserCredential ->
                         navigateAndClean(ActivateCredentialScreenRoute(authenticatedUserCredential.id))
                     },
@@ -58,13 +54,21 @@ fun App() {
                         navigateAndClean(HomeScreenRoute)
                     })
             }
-            composable<HomeScreenRoute> { HomeScreen() }
-            // You can add more destinations similarly
+            composable<HomeScreenRoute> {
+                HomeScreen(onClickBack = {
+                    navigateAndClean(
+                        LoginScreenRoute
+                    )
+                })
+            }
 
             composable<ActivateCredentialScreenRoute> { backStackEntry ->
                 val route = backStackEntry.toRoute<ActivateCredentialScreenRoute>()
                 RegisterUserScreen(
                     authenticatedUserCredentialId = route.authenticatedUserCredential,
+                    onRegisterUserSuccess = {
+                        navigateAndClean(LoginScreenRoute)
+                    },
                     onClickBack = {
                         navigateAndClean(LoginScreenRoute)
                     }

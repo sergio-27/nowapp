@@ -13,9 +13,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.example.project.models.AuthenticatedUser
+import org.example.project.models.AuthenticatedUserResponse
 import org.example.project.models.Config
 import org.example.project.models.Response
-import org.example.project.models.AuthenticatedUserResponse
 import org.example.project.utils.AppConstants
 
 object AuthorizationApiClient {

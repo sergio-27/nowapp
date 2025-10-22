@@ -1,7 +1,6 @@
 package org.example.project.routes
 
 import kotlinx.serialization.Serializable
-import org.example.project.models.AuthenticatedUser
 
 @Serializable
 open class Route

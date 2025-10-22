@@ -24,12 +24,12 @@ import org.example.project.components.buttons.PrimaryButton
 fun LoginOptionsView(
     isLoading: Boolean,
     onClickUseQrCode: () -> Unit,
-    onClickLogin: () -> Unit
+    onClickLogin: (username: String, password: String) -> Unit
 ) {
-    var userTextField by remember { mutableStateOf("") }
-    var passwordTextField by remember { mutableStateOf("") }
+    var emailTextField by remember { mutableStateOf("pepitron@gmail.com") }
+    var passwordTextField by remember { mutableStateOf("Pepepe") }
 
-    val onUsernameTextFieldChange: (String) -> Unit = { userTextField = it }
+    val onEmailTextFieldChange: (String) -> Unit = { emailTextField = it }
     val onPasswordTextFieldChange: (String) -> Unit = { passwordTextField = it }
 
     Column(
@@ -45,9 +45,9 @@ fun LoginOptionsView(
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             TextField(
-                value = userTextField,
-                placeholder = { Text("User") },
-                onValueChange = onUsernameTextFieldChange,
+                value = emailTextField,
+                placeholder = { Text("Email") },
+                onValueChange = onEmailTextFieldChange,
             )
             TextField(
                 value = passwordTextField,
@@ -61,7 +61,11 @@ fun LoginOptionsView(
                 enabled = !isLoading,
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
                 buttonText = "Login",
-                onClick = onClickLogin
+                onClick = {
+                    if (emailTextField.isNotBlank() && passwordTextField.isNotBlank()) {
+                        onClickLogin(emailTextField, passwordTextField)
+                    }
+                }
             )
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {

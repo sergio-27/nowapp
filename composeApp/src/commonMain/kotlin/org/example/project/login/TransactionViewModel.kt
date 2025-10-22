@@ -1,6 +1,7 @@
 package org.example.project.login
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -63,6 +64,15 @@ class TransactionViewModel(
                 // expose error state if needed
                 _isLoading.value = false
             }
+        }
+    }
+
+    fun authenticateUser(username: String, password: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            val responseUser = UserApiClient.authenticateUser(username, password)
+            _dbUser.value = responseUser
+            _isSuccess.value = responseUser != null
         }
     }
 

@@ -1,6 +1,5 @@
 package org.example.project.login.register
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,15 +21,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.example.project.components.buttons.PrimaryButton
-import org.example.project.models.User
+import org.example.project.models.RegisterUserModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
 fun RegisterUserScreen(
     registerUserViewModel: RegisterUserViewModel = viewModel { RegisterUserViewModel() },
-    authenticatedUserCredentialId: String,
-    onClickRegister: () -> Unit = {},
+    authenticatedUserCredentialId: String = "",
+    onRegisterUserSuccess: () -> Unit = {},
     onClickBack: () -> Unit = {}
 ) {
     val isSuccess by registerUserViewModel.isSuccess.collectAsState()
@@ -52,7 +51,7 @@ fun RegisterUserScreen(
 
     LaunchedEffect(isSuccess) {
         if (isSuccess) {
-            onClickRegister()
+            onRegisterUserSuccess()
         }
     }
     Scaffold {
@@ -107,7 +106,7 @@ fun RegisterUserScreen(
                         //TODO use form validator
                         if (passwordTextField == repeatPasswordTextField) {
                             registerUserViewModel.createUser(
-                                User(
+                                RegisterUserModel(
                                     name = nameTextField,
                                     surname = surnameTextField,
                                     birthDate = birthDateTextField,

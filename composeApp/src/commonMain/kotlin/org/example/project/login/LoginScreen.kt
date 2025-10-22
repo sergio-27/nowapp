@@ -19,7 +19,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun LoginScreen(
     transactionViewModel: TransactionViewModel = viewModel { TransactionViewModel() },
     onLoginSuccess: () -> Unit = {},
-    onClickLogin: () -> Unit = {},
     onClickRegisterUser: (authenticatedUserCredential: AuthenticatedUser) -> Unit = {},
 ) {
 
@@ -60,7 +59,9 @@ fun LoginScreen(
                     isDialogOpen = true
                     transactionViewModel.start()
                 },
-                onClickLogin = onClickLogin
+                onClickLogin = { user, pass ->
+                    transactionViewModel.authenticateUser(user, pass)
+                }
             )
         }
 

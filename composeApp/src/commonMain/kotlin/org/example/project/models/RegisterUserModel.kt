@@ -4,15 +4,14 @@ package org.example.project.models
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 
 @Serializable
-data class User(
+data class RegisterUserModel(
     val id: String = "",
     val name: String = "",
     val surname: String = "",
-    @JsonNames("birth_date")
     val birthDate: String = "",
     val email: String = "",
+    val password: String = ""
 )
