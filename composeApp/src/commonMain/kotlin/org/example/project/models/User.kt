@@ -9,5 +9,6 @@ data class User(
     val surname: String,
     val birthDate: String,
     val email: String,
-    val expirationDate: String
+    val createdAt: String = "",
+    val password: String
 )

@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.example.project.components.dialogs.ShowQrDialogView
+import org.example.project.models.AuthenticatedUser
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
@@ -18,12 +19,14 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun LoginScreen(
     transactionViewModel: TransactionViewModel = viewModel { TransactionViewModel() },
     onLoginSuccess: () -> Unit = {},
-    onClickActivateCredentials: () -> Unit = {},
+    onClickLogin: () -> Unit = {},
+    onClickRegisterUser: (authenticatedUserCredential: AuthenticatedUser) -> Unit = {},
 ) {
 
     val qrUrl by transactionViewModel.qrUrl.collectAsState()
     val isSuccess by transactionViewModel.isSuccess.collectAsState()
-    val authenticatedUser by transactionViewModel.authenticatedUser.collectAsState()
+    val authenticatedUserCredential by transactionViewModel.authenticatedUserCredential.collectAsState()
+    val dbUser by transactionViewModel.dbUser.collectAsState()
     val isLoading by transactionViewModel.isLoading.collectAsState()
 
     var responseText by remember { mutableStateOf("") }
@@ -34,7 +37,7 @@ fun LoginScreen(
     LaunchedEffect(isSuccess) {
         if (isSuccess) {
             isDialogOpen = false
-            if (authenticatedUser != null) {
+            if (dbUser != null) {
                 onLoginSuccess()
                 transactionViewModel.cancel()
             }
@@ -42,8 +45,10 @@ fun LoginScreen(
     }
 
     Scaffold {
-        if (isSuccess && authenticatedUser == null) {
+        if (isSuccess && dbUser == null) {
             ErrorView(
+                authenticatedUserCredential = authenticatedUserCredential,
+                onClickRegisterUser = onClickRegisterUser,
                 onClickBackToLogin = {
                     transactionViewModel.reset()
                 }
@@ -55,7 +60,7 @@ fun LoginScreen(
                     isDialogOpen = true
                     transactionViewModel.start()
                 },
-                onClickActivateCredential = onClickActivateCredentials
+                onClickLogin = onClickLogin
             )
         }
 

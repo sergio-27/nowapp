@@ -1,13 +1,16 @@
 package org.example.project.routes
 
 import kotlinx.serialization.Serializable
-
-
-@Serializable
-object ActivateCredentialScreenRoute
+import org.example.project.models.AuthenticatedUser
 
 @Serializable
-object LoginScreenRoute
+open class Route
 
 @Serializable
-object HomeScreenRoute
+data class ActivateCredentialScreenRoute(val authenticatedUserCredential: String): Route()
+
+@Serializable
+object LoginScreenRoute: Route()
+
+@Serializable
+object HomeScreenRoute: Route()

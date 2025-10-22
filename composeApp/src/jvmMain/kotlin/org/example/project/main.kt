@@ -2,13 +2,10 @@ package org.example.project
 
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
-import androidx.compose.ui.window.rememberDialogState
 import androidx.compose.ui.window.rememberWindowState
 import kotlinx.serialization.Serializable
-import org.example.project.login.TransactionViewModel
 
 fun main() = application {
     // Start the server when the app launches

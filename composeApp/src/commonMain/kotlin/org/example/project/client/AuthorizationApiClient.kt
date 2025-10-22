@@ -16,12 +16,13 @@ import org.example.project.models.AuthenticatedUser
 import org.example.project.models.Config
 import org.example.project.models.Response
 import org.example.project.models.AuthenticatedUserResponse
+import org.example.project.utils.AppConstants
 
 object AuthorizationApiClient {
 
     suspend fun createTransaction(body: Config): Response? {
         try {
-            return apiClient.post("https://interzonal-flurriedly-madisyn.ngrok-free.dev/verifier/transaction/create") {
+            return apiClient.post("${AppConstants.requestedCredentialMetadataConfig.urlPrefix}/verifier/transaction/create") {
                 contentType(ContentType.Application.Json)
                 setBody(body)
             }.body()
@@ -41,7 +42,7 @@ object AuthorizationApiClient {
             while (true) {
                 try {
                     val response: HttpResponse =
-                        apiClient.get("https://interzonal-flurriedly-madisyn.ngrok-free.dev/verifier/api/single/$id")
+                        apiClient.get("${AppConstants.requestedCredentialMetadataConfig.urlPrefix}/verifier/api/single/$id")
                     if (response.status == HttpStatusCode.OK) {
                         emit(response.body<AuthenticatedUserResponse>().authenticatedUser)
                         break

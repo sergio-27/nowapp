@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.example.project.client.AuthorizationApiClient
 import org.example.project.client.UserApiClient
+import org.example.project.models.AuthenticatedUser
 import org.example.project.models.User
 import org.example.project.utils.AppConstants
 
@@ -26,8 +27,11 @@ class TransactionViewModel(
     private val _isSuccess = MutableStateFlow(false)
     val isSuccess: StateFlow<Boolean> = _isSuccess.asStateFlow()
 
-    private val _authenticatedUser = MutableStateFlow<User?>(null)
-    val authenticatedUser: StateFlow<User?> = _authenticatedUser.asStateFlow()
+    private val _authenticatedUserCredential = MutableStateFlow<AuthenticatedUser?>(null)
+    val authenticatedUserCredential: StateFlow<AuthenticatedUser?> = _authenticatedUserCredential.asStateFlow()
+
+    private val _dbUser = MutableStateFlow<User?>(null)
+    val dbUser: StateFlow<User?> = _dbUser.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -43,9 +47,11 @@ class TransactionViewModel(
                         _qrBase64.value = it.qrCodePng
                         _qrUrl.value = it.qrCodeUrl
                         AuthorizationApiClient.pollForResult(it.id).collect { authenticatedUser ->
-                            UserApiClient.getUserById("234e59484D").let { response ->
+                            UserApiClient.getUserById(authenticatedUser.id).let { response ->
                                 if (response != null) {
-                                    _authenticatedUser.value = response
+                                    _dbUser.value = response
+                                } else {
+                                    _authenticatedUserCredential.value = authenticatedUser
                                 }
                                 _isSuccess.value = true
                                 _isLoading.value = false
@@ -61,7 +67,7 @@ class TransactionViewModel(
     }
 
     fun reset() {
-        _authenticatedUser.value = null
+        _dbUser.value = null
         _qrUrl.value = null
         _qrBase64.value = null
         _isLoading.value = false
