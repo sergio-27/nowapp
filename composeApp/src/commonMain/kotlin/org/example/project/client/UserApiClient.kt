@@ -39,7 +39,7 @@ object UserApiClient {
      */
     suspend fun authenticateUser(email: String, password: String): User? {
         try {
-            //TODO mcreate mapper for responses from DTO to Model
+            //TODO create mapper for responses from DTO to Model
             print("https://interzonal-flurriedly-madisyn.ngrok-free.dev/users/auth")
             return apiClient.post("${AppConstants.requestedCredentialMetadataConfig.urlPrefix}/users/auth") {
                 contentType(ContentType.Application.Json)

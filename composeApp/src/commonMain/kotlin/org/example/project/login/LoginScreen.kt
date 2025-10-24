@@ -24,6 +24,7 @@ fun LoginScreen(
 
     val qrUrl by transactionViewModel.qrUrl.collectAsState()
     val isSuccess by transactionViewModel.isSuccess.collectAsState()
+    val isError by transactionViewModel.isError.collectAsState()
     val authenticatedUserCredential by transactionViewModel.authenticatedUserCredential.collectAsState()
     val dbUser by transactionViewModel.dbUser.collectAsState()
     val isLoading by transactionViewModel.isLoading.collectAsState()
@@ -44,7 +45,7 @@ fun LoginScreen(
     }
 
     Scaffold {
-        if (isSuccess && dbUser == null) {
+        if (isSuccess && dbUser == null || isError) {
             ErrorView(
                 authenticatedUserCredential = authenticatedUserCredential,
                 onClickRegisterUser = onClickRegisterUser,

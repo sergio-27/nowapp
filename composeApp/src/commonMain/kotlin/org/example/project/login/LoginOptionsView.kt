@@ -2,10 +2,12 @@ package org.example.project.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -37,7 +39,7 @@ fun LoginOptionsView(
         verticalArrangement = Arrangement.spacedBy(
             space = 6.dp,
             alignment = Alignment.CenterVertically
-        )
+        ),
     ) {
         Column(
             Modifier.fillMaxWidth(),
@@ -56,24 +58,30 @@ fun LoginOptionsView(
                 onValueChange = onPasswordTextFieldChange,
             )
         }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-            PrimaryButton(
-                enabled = !isLoading,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
-                buttonText = "Login",
-                onClick = {
-                    if (emailTextField.isNotBlank() && passwordTextField.isNotBlank()) {
-                        onClickLogin(emailTextField, passwordTextField)
+        Column(
+            Modifier.fillMaxWidth().defaultMinSize(minHeight = 100.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            if (!isLoading) {
+                PrimaryButton(
+                    enabled = !isLoading,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
+                    buttonText = "Login",
+                    onClick = {
+                        if (emailTextField.isNotBlank() && passwordTextField.isNotBlank()) {
+                            onClickLogin(emailTextField, passwordTextField)
+                        }
                     }
-                }
-            )
-        }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-            PrimaryButton(
-                enabled = !isLoading,
-                buttonText = "Use QR Code",
-                onClick = onClickUseQrCode
-            )
+                )
+                PrimaryButton(
+                    enabled = !isLoading,
+                    buttonText = "Use QR Code",
+                    onClick = onClickUseQrCode
+                )
+            } else {
+                CircularProgressIndicator()
+            }
         }
     }
 }

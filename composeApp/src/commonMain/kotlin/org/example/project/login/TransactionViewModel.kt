@@ -28,6 +28,9 @@ class TransactionViewModel(
     private val _isSuccess = MutableStateFlow(false)
     val isSuccess: StateFlow<Boolean> = _isSuccess.asStateFlow()
 
+    private val _isError = MutableStateFlow(false)
+    val isError: StateFlow<Boolean> = _isError.asStateFlow()
+
     private val _authenticatedUserCredential = MutableStateFlow<AuthenticatedUser?>(null)
     val authenticatedUserCredential: StateFlow<AuthenticatedUser?> = _authenticatedUserCredential.asStateFlow()
 
@@ -73,12 +76,16 @@ class TransactionViewModel(
             val responseUser = UserApiClient.authenticateUser(username, password)
             _dbUser.value = responseUser
             _isSuccess.value = responseUser != null
+            if (responseUser == null) {
+                _isError.value = true
+            }
         }
     }
 
     fun reset() {
         _dbUser.value = null
         _qrUrl.value = null
+        _isError.value = false
         _qrBase64.value = null
         _isLoading.value = false
         _isSuccess.value = false

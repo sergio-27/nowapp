@@ -13,5 +13,6 @@ data class RegisterUserModel(
     val surname: String = "",
     val birthDate: String = "",
     val email: String = "",
+    val createdAt: String = "",
     val password: String = ""
 )
